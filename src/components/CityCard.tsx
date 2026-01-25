@@ -1,4 +1,5 @@
-import { Anomaly } from '@/types';
+import Image from "next/image";
+import { Anomaly } from "@/types";
 
 interface CityCardProps {
   anomaly: Anomaly;
@@ -10,21 +11,21 @@ export function CityCard({ anomaly }: CityCardProps) {
   const isCold = deviation < 0;
 
   // Format deviation with sign
-  const formattedDeviation = `${deviation > 0 ? '+' : ''}${deviation.toFixed(1)}°C`;
+  const formattedDeviation = `${deviation > 0 ? "+" : ""}${deviation.toFixed(1)}°C`;
 
   // Background color based on deviation (WCAG AA compliant contrast)
   const bgColorClass = isHot
-    ? 'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700'
+    ? "bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700"
     : isCold
-      ? 'bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700'
-      : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700';
+      ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700"
+      : "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700";
 
   // Text color for deviation (high contrast)
   const deviationColorClass = isHot
-    ? 'text-red-700 dark:text-red-300'
+    ? "text-red-700 dark:text-red-300"
     : isCold
-      ? 'text-blue-700 dark:text-blue-300'
-      : 'text-gray-700 dark:text-gray-300';
+      ? "text-blue-700 dark:text-blue-300"
+      : "text-gray-700 dark:text-gray-300";
 
   return (
     <article
@@ -35,7 +36,9 @@ export function CityCard({ anomaly }: CityCardProps) {
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
           {city.name}
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{city.country}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {city.country}
+        </p>
       </div>
 
       <div className="mb-4 space-y-1">
@@ -61,13 +64,13 @@ export function CityCard({ anomaly }: CityCardProps) {
           </span>
           <span
             className={`text-lg font-bold ${deviationColorClass}`}
-            aria-describedby={`deviation-explanation-${city.name.replace(/\s+/g, '-')}`}
+            aria-describedby={`deviation-explanation-${city.name.replace(/\s+/g, "-")}`}
           >
             {formattedDeviation}
           </span>
         </div>
         <p
-          id={`deviation-explanation-${city.name.replace(/\s+/g, '-')}`}
+          id={`deviation-explanation-${city.name.replace(/\s+/g, "-")}`}
           className="sr-only"
         >
           {isHot
@@ -84,20 +87,32 @@ export function CityCard({ anomaly }: CityCardProps) {
           Related News
         </h3>
         {news.length > 0 ? (
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {news.map((article, index) => (
               <li key={index}>
                 <a
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-start gap-1"
+                  className="flex items-start gap-2 group"
                 >
-                  <span className="truncate">{article.title}</span>
-                  <span className="shrink-0" aria-hidden="true">
-                    ↗
+                  {article.image && (
+                    <Image
+                      src={article.image}
+                      alt={`Thumbnail for: ${article.title}`}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 object-cover rounded shrink-0"
+                      unoptimized
+                    />
+                  )}
+                  <span className="text-sm text-blue-600 dark:text-blue-400 group-hover:underline flex items-start gap-1 min-w-0">
+                    <span className="line-clamp-2">{article.title}</span>
+                    <span className="shrink-0" aria-hidden="true">
+                      ↗
+                    </span>
+                    <span className="sr-only">(opens in new tab)</span>
                   </span>
-                  <span className="sr-only">(opens in new tab)</span>
                 </a>
               </li>
             ))}

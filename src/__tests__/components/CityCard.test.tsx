@@ -72,10 +72,43 @@ describe("CityCard data transformations", () => {
           url: "https://test.com",
           source: "Test",
           publishedAt: "",
+          image: null,
         },
       ],
     };
     expect(anomalyWithNews.news.length).toBe(1);
+  });
+
+  it("should handle news with image", () => {
+    const anomalyWithImage: Anomaly = {
+      ...baseAnomaly,
+      news: [
+        {
+          title: "Weather Story",
+          url: "https://news.com/story",
+          source: "News Source",
+          publishedAt: "2026-01-25T10:00:00Z",
+          image: "https://news.com/image.jpg",
+        },
+      ],
+    };
+    expect(anomalyWithImage.news[0].image).toBe("https://news.com/image.jpg");
+  });
+
+  it("should handle news without image", () => {
+    const anomalyWithoutImage: Anomaly = {
+      ...baseAnomaly,
+      news: [
+        {
+          title: "Weather Story",
+          url: "https://news.com/story",
+          source: "News Source",
+          publishedAt: "2026-01-25T10:00:00Z",
+          image: null,
+        },
+      ],
+    };
+    expect(anomalyWithoutImage.news[0].image).toBeNull();
   });
 
   it("should generate correct aria-label", () => {

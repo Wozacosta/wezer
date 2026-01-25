@@ -26,6 +26,7 @@ export interface NewsArticle {
   url: string;
   source: string;
   publishedAt: string;
+  image: string | null;
 }
 
 // API response types for runtime validation
@@ -43,13 +44,14 @@ export interface GNewsResponse {
     url?: string;
     source?: { name?: string };
     publishedAt?: string;
+    image?: string;
   }>;
 }
 
 // Sort options
 export type SortOption =
-  | 'deviation-desc'
-  | 'deviation-asc'
-  | 'temp-desc'
-  | 'temp-asc'
-  | 'name-asc';
+  | "deviation-desc"
+  | "deviation-asc"
+  | "temp-desc"
+  | "temp-asc"
+  | "name-asc";

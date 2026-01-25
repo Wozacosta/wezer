@@ -1,12 +1,12 @@
-import { NewsArticle, GNewsResponse } from '@/types';
+import { NewsArticle, GNewsResponse } from "@/types";
 
-const GNEWS_BASE_URL = 'https://gnews.io/api/v4/search';
+const GNEWS_BASE_URL = "https://gnews.io/api/v4/search";
 
 /**
  * Validate that the response has the expected shape
  */
 function isValidResponse(data: unknown): data is GNewsResponse {
-  if (typeof data !== 'object' || data === null) return false;
+  if (typeof data !== "object" || data === null) return false;
   const response = data as Record<string, unknown>;
   return Array.isArray(response.articles);
 }
@@ -19,7 +19,7 @@ function isValidResponse(data: unknown): data is GNewsResponse {
 export async function getNewsForCity(cityName: string): Promise<NewsArticle[]> {
   const apiKey = process.env.GNEWS_API_KEY;
 
-  if (!apiKey || apiKey === 'your_gnews_api_key_here') {
+  if (!apiKey || apiKey === "your_gnews_api_key_here") {
     // Return empty array if no API key configured
     return [];
   }
@@ -40,7 +40,7 @@ export async function getNewsForCity(cityName: string): Promise<NewsArticle[]> {
 
     if (!response.ok) {
       console.error(
-        `GNews API error for ${cityName}: ${response.status} ${response.statusText}`
+        `GNews API error for ${cityName}: ${response.status} ${response.statusText}`,
       );
       return [];
     }
@@ -53,15 +53,13 @@ export async function getNewsForCity(cityName: string): Promise<NewsArticle[]> {
     }
 
     return (data.articles || [])
-      .filter(
-        (article) =>
-          article.title && article.url && article.source?.name
-      )
+      .filter((article) => article.title && article.url && article.source?.name)
       .map((article) => ({
         title: article.title!,
         url: article.url!,
         source: article.source!.name!,
-        publishedAt: article.publishedAt || '',
+        publishedAt: article.publishedAt || "",
+        image: article.image || null,
       }));
   } catch (error) {
     console.error(`Failed to fetch news for ${cityName}:`, error);
