@@ -55,3 +55,6 @@ export type SortOption =
   | "temp-desc"
   | "temp-asc"
   | "name-asc";
+
+// Temperature unit preference
+export type TemperatureUnit = "celsius" | "fahrenheit";

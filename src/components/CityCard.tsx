@@ -1,17 +1,34 @@
+"use client";
+
 import Image from "next/image";
 import { Anomaly } from "@/types";
+import {
+  useTemperatureUnit,
+  formatTemperature,
+  formatDeviation,
+  deviationToFahrenheit,
+} from "@/context/TemperatureUnitContext";
 
 interface CityCardProps {
   anomaly: Anomaly;
 }
 
 export function CityCard({ anomaly }: CityCardProps) {
+  const { unit } = useTemperatureUnit();
   const { city, currentTemp, avgTemp, deviation, news } = anomaly;
   const isHot = deviation > 0;
   const isCold = deviation < 0;
 
-  // Format deviation with sign
-  const formattedDeviation = `${deviation > 0 ? "+" : ""}${deviation.toFixed(1)}°C`;
+  // Format temperatures with appropriate unit
+  const formattedCurrentTemp = formatTemperature(currentTemp, unit);
+  const formattedAvgTemp = formatTemperature(avgTemp, unit);
+  const formattedDeviation = formatDeviation(deviation, unit);
+
+  // Get absolute deviation value for screen reader text
+  const absDeviationValue =
+    unit === "fahrenheit"
+      ? Math.abs(deviationToFahrenheit(deviation)).toFixed(1)
+      : Math.abs(deviation).toFixed(1);
 
   // Background color based on deviation (WCAG AA compliant contrast)
   const bgColorClass = isHot
@@ -47,7 +64,7 @@ export function CityCard({ anomaly }: CityCardProps) {
             Current
           </span>
           <span className="text-xl font-bold text-gray-900 dark:text-white">
-            {currentTemp.toFixed(1)}°C
+            {formattedCurrentTemp}
           </span>
         </div>
         <div className="flex justify-between items-center">
@@ -55,7 +72,7 @@ export function CityCard({ anomaly }: CityCardProps) {
             Average
           </span>
           <span className="text-sm text-gray-700 dark:text-gray-300">
-            {avgTemp.toFixed(1)}°C
+            {formattedAvgTemp}
           </span>
         </div>
         <div className="flex justify-between items-center pt-2 border-t border-gray-200 dark:border-gray-600">
@@ -74,9 +91,9 @@ export function CityCard({ anomaly }: CityCardProps) {
           className="sr-only"
         >
           {isHot
-            ? `${city.name} is ${Math.abs(deviation).toFixed(1)} degrees warmer than usual`
+            ? `${city.name} is ${absDeviationValue} degrees warmer than usual`
             : isCold
-              ? `${city.name} is ${Math.abs(deviation).toFixed(1)} degrees colder than usual`
+              ? `${city.name} is ${absDeviationValue} degrees colder than usual`
               : `${city.name} is at its average temperature`}
         </p>
       </div>
