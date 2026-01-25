@@ -8,6 +8,7 @@ import {
   formatDeviation,
   deviationToFahrenheit,
 } from "@/context/TemperatureUnitContext";
+import { countryCodeToFlag, getWeatherUrl } from "@/lib/city-utils";
 
 interface CityCardProps {
   anomaly: Anomaly;
@@ -44,6 +45,10 @@ export function CityCard({ anomaly }: CityCardProps) {
       ? "text-blue-700 dark:text-blue-300"
       : "text-gray-700 dark:text-gray-300";
 
+  // Generate flag emoji and weather URL
+  const flagEmoji = countryCodeToFlag(city.countryCode);
+  const weatherUrl = getWeatherUrl(city.lat, city.lon);
+
   return (
     <article
       className={`rounded-lg border p-4 ${bgColorClass} transition-shadow hover:shadow-md`}
@@ -51,7 +56,7 @@ export function CityCard({ anomaly }: CityCardProps) {
     >
       <div className="mb-3">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {city.name}
+          <span aria-hidden="true">{flagEmoji}</span> {city.name}
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {city.country}
@@ -96,6 +101,20 @@ export function CityCard({ anomaly }: CityCardProps) {
               ? `${city.name} is ${absDeviationValue} degrees colder than usual`
               : `${city.name} is at its average temperature`}
         </p>
+      </div>
+
+      {/* Weather Link */}
+      <div className="mb-3">
+        <a
+          href={weatherUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          View detailed weather
+          <span aria-hidden="true">↗</span>
+          <span className="sr-only">(opens in new tab)</span>
+        </a>
       </div>
 
       {/* News Section */}

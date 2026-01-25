@@ -5,6 +5,7 @@ import {
   formatDeviation,
   deviationToFahrenheit,
 } from "@/lib/temperature";
+import { countryCodeToFlag, getWeatherUrl } from "@/lib/city-utils";
 
 // Due to React 19 + Testing Library compatibility issues,
 // we test the component logic indirectly through data transformations
@@ -14,6 +15,7 @@ const baseAnomaly: Anomaly = {
   city: {
     name: "Test City",
     country: "Test Country",
+    countryCode: "US",
     lat: 40.7128,
     lon: -74.006,
   },
@@ -199,6 +201,65 @@ describe("CityCard data transformations", () => {
       );
       const ariaLabel = `${city.name} weather anomaly: ${formattedDeviation} from average`;
       expect(ariaLabel).toBe("Test City weather anomaly: +9.0°F from average");
+    });
+  });
+
+  describe("flag emoji generation", () => {
+    it("should generate correct flag emoji from countryCode", () => {
+      const flag = countryCodeToFlag(baseAnomaly.city.countryCode);
+      expect(flag).toBe("🇺🇸");
+    });
+
+    it("should handle UK country code (GB)", () => {
+      const ukAnomaly: Anomaly = {
+        ...baseAnomaly,
+        city: { ...baseAnomaly.city, countryCode: "GB" },
+      };
+      const flag = countryCodeToFlag(ukAnomaly.city.countryCode);
+      expect(flag).toBe("🇬🇧");
+    });
+
+    it("should handle France country code", () => {
+      const frAnomaly: Anomaly = {
+        ...baseAnomaly,
+        city: { ...baseAnomaly.city, countryCode: "FR" },
+      };
+      const flag = countryCodeToFlag(frAnomaly.city.countryCode);
+      expect(flag).toBe("🇫🇷");
+    });
+
+    it("should handle Japan country code", () => {
+      const jpAnomaly: Anomaly = {
+        ...baseAnomaly,
+        city: { ...baseAnomaly.city, countryCode: "JP" },
+      };
+      const flag = countryCodeToFlag(jpAnomaly.city.countryCode);
+      expect(flag).toBe("🇯🇵");
+    });
+  });
+
+  describe("weather URL generation", () => {
+    it("should generate correct weather URL from coordinates", () => {
+      const url = getWeatherUrl(baseAnomaly.city.lat, baseAnomaly.city.lon);
+      expect(url).toBe("https://weather.com/weather/today/l/40.7128,-74.006");
+    });
+
+    it("should handle southern hemisphere coordinates", () => {
+      const sydneyAnomaly: Anomaly = {
+        ...baseAnomaly,
+        city: { ...baseAnomaly.city, lat: -33.8688, lon: 151.2093 },
+      };
+      const url = getWeatherUrl(sydneyAnomaly.city.lat, sydneyAnomaly.city.lon);
+      expect(url).toBe("https://weather.com/weather/today/l/-33.8688,151.2093");
+    });
+
+    it("should handle European coordinates", () => {
+      const parisAnomaly: Anomaly = {
+        ...baseAnomaly,
+        city: { ...baseAnomaly.city, lat: 48.8566, lon: 2.3522 },
+      };
+      const url = getWeatherUrl(parisAnomaly.city.lat, parisAnomaly.city.lon);
+      expect(url).toBe("https://weather.com/weather/today/l/48.8566,2.3522");
     });
   });
 });

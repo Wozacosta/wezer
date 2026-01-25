@@ -3,6 +3,7 @@
 export interface City {
   name: string;
   country: string;
+  countryCode: string;
   lat: number;
   lon: number;
 }
