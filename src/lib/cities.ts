@@ -806,20 +806,6 @@ export const cities: City[] = [
     lat: 33.9533,
     lon: -117.3962,
   },
-  {
-    name: "Spokane",
-    country: "USA",
-    countryCode: "US",
-    lat: 47.6588,
-    lon: -117.426,
-  },
-  {
-    name: "Tacoma",
-    country: "USA",
-    countryCode: "US",
-    lat: 47.2529,
-    lon: -122.4443,
-  },
 
   // Mountain/Plains US
   {
@@ -850,48 +836,6 @@ export const cities: City[] = [
     lat: 38.8339,
     lon: -104.8214,
   },
-  {
-    name: "Reno",
-    country: "USA",
-    countryCode: "US",
-    lat: 39.5296,
-    lon: -119.8138,
-  },
-  {
-    name: "Billings",
-    country: "USA",
-    countryCode: "US",
-    lat: 45.7833,
-    lon: -108.5007,
-  },
-  {
-    name: "Fargo",
-    country: "USA",
-    countryCode: "US",
-    lat: 46.8772,
-    lon: -96.7898,
-  },
-  {
-    name: "Sioux Falls",
-    country: "USA",
-    countryCode: "US",
-    lat: 43.5446,
-    lon: -96.7311,
-  },
-  {
-    name: "Cheyenne",
-    country: "USA",
-    countryCode: "US",
-    lat: 41.14,
-    lon: -104.8202,
-  },
-  {
-    name: "Santa Fe",
-    country: "USA",
-    countryCode: "US",
-    lat: 35.687,
-    lon: -105.9378,
-  },
 
   // Hawaii & Alaska
   {
@@ -900,20 +844,6 @@ export const cities: City[] = [
     countryCode: "US",
     lat: 21.3069,
     lon: -157.8583,
-  },
-  {
-    name: "Fairbanks",
-    country: "USA",
-    countryCode: "US",
-    lat: 64.8378,
-    lon: -147.7164,
-  },
-  {
-    name: "Juneau",
-    country: "USA",
-    countryCode: "US",
-    lat: 58.3019,
-    lon: -134.4197,
   },
 
   // ===== NEW CITIES: ~50 European cities =====
@@ -1298,5 +1228,77 @@ export const cities: City[] = [
     countryCode: "HR",
     lat: 45.815,
     lon: 15.9819,
+  },
+
+  // ===== NEW CITIES: 10 Major World Cities =====
+  {
+    name: "Dhaka",
+    country: "Bangladesh",
+    countryCode: "BD",
+    lat: 23.8103,
+    lon: 90.4125,
+  },
+  {
+    name: "Guangzhou",
+    country: "China",
+    countryCode: "CN",
+    lat: 23.1291,
+    lon: 113.2644,
+  },
+  {
+    name: "Shenzhen",
+    country: "China",
+    countryCode: "CN",
+    lat: 22.5431,
+    lon: 114.0579,
+  },
+  {
+    name: "Kinshasa",
+    country: "DR Congo",
+    countryCode: "CD",
+    lat: -4.4419,
+    lon: 15.2663,
+  },
+  {
+    name: "Tianjin",
+    country: "China",
+    countryCode: "CN",
+    lat: 39.3434,
+    lon: 117.3616,
+  },
+  {
+    name: "Lahore",
+    country: "Pakistan",
+    countryCode: "PK",
+    lat: 31.5204,
+    lon: 74.3587,
+  },
+  {
+    name: "Bengaluru",
+    country: "India",
+    countryCode: "IN",
+    lat: 12.9716,
+    lon: 77.5946,
+  },
+  {
+    name: "Ho Chi Minh City",
+    country: "Vietnam",
+    countryCode: "VN",
+    lat: 10.8231,
+    lon: 106.6297,
+  },
+  {
+    name: "Chengdu",
+    country: "China",
+    countryCode: "CN",
+    lat: 30.5728,
+    lon: 104.0668,
+  },
+  {
+    name: "Chongqing",
+    country: "China",
+    countryCode: "CN",
+    lat: 29.4316,
+    lon: 106.9123,
   },
 ];
