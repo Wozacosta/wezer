@@ -139,4 +139,135 @@ describe("getNewsForCity", () => {
     expect(result).toHaveLength(1);
     expect(result[0].title).toBe("Valid Article");
   });
+
+  describe("deviation-based query building", () => {
+    const mockEmptyResponse = () => {
+      vi.mocked(fetch).mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ articles: [] }),
+      } as Response);
+    };
+
+    const getQueryFromFetch = () => vi.mocked(fetch).mock.calls[0][0] as string;
+
+    it("should include 'heatwave' for deviation >= 10", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Paris", 12);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Paris%20weather%20heatwave"),
+        expect.any(Object),
+      );
+    });
+
+    it("should include 'heatwave' at exact boundary (deviation = 10)", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Paris", 10);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Paris%20weather%20heatwave"),
+        expect.any(Object),
+      );
+    });
+
+    it("should include 'hot' for deviation >= 5 and < 10", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Paris", 7);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Paris%20weather%20hot"),
+        expect.any(Object),
+      );
+    });
+
+    it("should include 'hot' at exact boundary (deviation = 5)", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Paris", 5);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Paris%20weather%20hot"),
+        expect.any(Object),
+      );
+    });
+
+    it("should include 'freezing' for deviation <= -10", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Moscow", -15);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Moscow%20weather%20freezing"),
+        expect.any(Object),
+      );
+    });
+
+    it("should include 'freezing' at exact boundary (deviation = -10)", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Moscow", -10);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Moscow%20weather%20freezing"),
+        expect.any(Object),
+      );
+    });
+
+    it("should include 'cold' for deviation <= -5 and > -10", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Berlin", -7);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Berlin%20weather%20cold"),
+        expect.any(Object),
+      );
+    });
+
+    it("should include 'cold' at exact boundary (deviation = -5)", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Berlin", -5);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("Berlin%20weather%20cold"),
+        expect.any(Object),
+      );
+    });
+
+    it("should not include descriptor for small positive deviations", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("London", 2);
+      const query = getQueryFromFetch();
+      expect(query).toContain("London%20weather");
+      expect(query).not.toContain("hot");
+      expect(query).not.toContain("heatwave");
+    });
+
+    it("should not include descriptor for small negative deviations", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("London", -3);
+      const query = getQueryFromFetch();
+      expect(query).toContain("London%20weather");
+      expect(query).not.toContain("cold");
+      expect(query).not.toContain("freezing");
+    });
+
+    it("should not include descriptor for deviation = 0", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("London", 0);
+      const query = getQueryFromFetch();
+      expect(query).toContain("London%20weather");
+      expect(query).not.toContain("hot");
+      expect(query).not.toContain("cold");
+      expect(query).not.toContain("heatwave");
+      expect(query).not.toContain("freezing");
+    });
+
+    it("should work without deviation (backward compatible)", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("Tokyo");
+      const query = getQueryFromFetch();
+      expect(query).toContain("Tokyo%20weather");
+      expect(query).not.toContain("hot");
+      expect(query).not.toContain("cold");
+    });
+
+    it("should handle cities with spaces correctly", async () => {
+      mockEmptyResponse();
+      await getNewsForCity("New York", 12);
+      expect(fetch).toHaveBeenCalledWith(
+        expect.stringContaining("New%20York%20weather%20heatwave"),
+        expect.any(Object),
+      );
+    });
+  });
 });

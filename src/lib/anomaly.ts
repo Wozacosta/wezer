@@ -1,8 +1,8 @@
-import { Anomaly } from '@/types';
-import { cities } from './cities';
-import { getHistoricalAverage } from './historical-averages';
-import { getCurrentWeather } from './weather';
-import { getNewsForCity } from './news';
+import { Anomaly } from "@/types";
+import { cities } from "./cities";
+import { getHistoricalAverage } from "./historical-averages";
+import { getCurrentWeather } from "./weather";
+import { getNewsForCity } from "./news";
 
 /**
  * Calculate deviation between current and historical temperature
@@ -10,7 +10,10 @@ import { getNewsForCity } from './news';
  * @param historical Historical average temperature in Celsius
  * @returns Signed deviation rounded to 1 decimal place
  */
-export function calculateDeviation(current: number, historical: number): number {
+export function calculateDeviation(
+  current: number,
+  historical: number,
+): number {
   return Math.round((current - historical) * 10) / 10;
 }
 
@@ -36,14 +39,14 @@ export async function getAnomalies(): Promise<Anomaly[]> {
 
   // Fetch current weather for all cities in parallel
   const weatherResults = await Promise.allSettled(
-    cities.map((city) => getCurrentWeather(city))
+    cities.map((city) => getCurrentWeather(city)),
   );
 
   // Build anomalies array (skip failed fetches)
   const anomalies: Anomaly[] = [];
 
   weatherResults.forEach((result, index) => {
-    if (result.status === 'fulfilled' && result.value) {
+    if (result.status === "fulfilled" && result.value) {
       const city = cities[index];
       const currentTemp = result.value.temperature;
       const avgTemp = getHistoricalAverage(city.name, dayOfYear);
@@ -67,11 +70,11 @@ export async function getAnomalies(): Promise<Anomaly[]> {
   // Fetch news for TOP 3 anomalies only (to respect GNews rate limits)
   const top3 = anomalies.slice(0, 3);
   const newsResults = await Promise.allSettled(
-    top3.map((anomaly) => getNewsForCity(anomaly.city.name))
+    top3.map((anomaly) => getNewsForCity(anomaly.city.name, anomaly.deviation)),
   );
 
   newsResults.forEach((result, index) => {
-    if (result.status === 'fulfilled') {
+    if (result.status === "fulfilled") {
       top3[index].news = result.value;
     }
   });
