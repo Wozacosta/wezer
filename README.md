@@ -1,149 +1,62 @@
 # Wezer
 
-Real-time weather anomaly tracking for global cities.
+Where the weather is strangest right now: 178 cities ranked by how far their current
+temperature is from the usual for today's date.
 
-Wezer monitors temperature deviations from historical averages across 50 cities worldwide, highlighting locations experiencing unusual weather patterns and providing contextual news coverage.
+**Live at [wezer.vercel.app](https://wezer.vercel.app)**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/desktop-dark.webp">
+  <img src="docs/screenshots/desktop-light.webp" alt="Wezer showing city cards sorted by temperature deviation, with Hartford, Newark and Philadelphia at the top">
+</picture>
 
 ## Features
 
-- **Global Coverage** - Track 50 cities across North America, South America, Europe, Africa, Middle East, Asia, and Oceania
-- **Real-Time Anomalies** - Compare current temperatures against historical daily averages
-- **Contextual News** - Weather-related articles for top anomalies via GNews API
-- **Flexible Sorting** - Sort by deviation, temperature, or alphabetically
-- **Dark Mode** - Automatic theme based on system preferences
-- **Accessible** - WCAG AA compliant with full keyboard navigation
+- **Anomaly ranking**: each city's current temperature minus its average for the day of the
+  year. Warmer than usual is red, colder is blue.
+- **178 cities**: 50 spread across every continent, then 66 more in the US, 52 more in
+  Europe and 10 more large cities in Asia and Africa.
+- **Sorting**: biggest or smallest deviation, hottest, coldest, or A-Z.
+- **°C / °F toggle**: defaults from your browser locale and is remembered in localStorage.
+- **News for the top 3**: weather headlines from GNews for the three biggest anomalies, when an
+  API key is set.
+- **Light and dark themes**: follows your system preference.
 
-## Tech Stack
+| Mobile, light | Mobile, dark |
+| --- | --- |
+| <img src="docs/screenshots/mobile-light.webp" alt="Wezer on a phone, light theme" width="260"> | <img src="docs/screenshots/mobile-dark.webp" alt="Wezer on a phone, dark theme" width="260"> |
 
-- **Framework:** Next.js 16 with App Router
-- **Language:** TypeScript (strict mode)
-- **Styling:** Tailwind CSS 4
-- **Testing:** Vitest + Testing Library
-- **APIs:** Open-Meteo (weather), GNews (news)
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (compatible with Next.js 16)
-- pnpm package manager
-
-### Installation
+## Development
 
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd wezer
-
-# Install dependencies
 pnpm install
+pnpm dev            # http://localhost:3000
+pnpm test           # Vitest in watch mode (pnpm test:run runs once)
+pnpm lint
+pnpm build
 ```
 
-### Development
+| Variable | Required | What |
+| --- | --- | --- |
+| `GNEWS_API_KEY` | No | [GNews](https://gnews.io/) key. Without it the news section shows "No recent news". |
 
-```bash
-# Start development server
-pnpm dev
-```
+Put it in `.env.local`. Weather data needs no key.
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+## How it's built
 
-### Environment Variables
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4 and Vitest, deployed on Vercel.
+The page is a server component that fetches the current temperature for every city from
+[Open-Meteo](https://open-meteo.com/) in parallel, cached for an hour, then compares each one with
+a built-in table of averages. News comes from [GNews](https://gnews.io/), cached for 24 hours to
+stay inside the free tier's rate limit. The averages are hand-entered monthly values,
+interpolated per day, not measured climate normals; `TODO.md` describes replacing them with
+Open-Meteo archive data.
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `GNEWS_API_KEY` | No | API key for news integration. App works without it. |
-
-## Scripts
-
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start development server |
-| `pnpm build` | Create production build |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm test` | Run tests in watch mode |
-| `pnpm test:run` | Run tests once (CI mode) |
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── page.tsx           # Home page (server component)
-│   ├── layout.tsx         # Root layout with metadata
-│   └── globals.css        # Global styles
-├── components/            # React components
-│   ├── Header.tsx
-│   ├── AnomalyDashboard.tsx
-│   ├── AnomalyList.tsx
-│   ├── CityCard.tsx
-│   └── SortControls.tsx
-├── lib/                   # Core logic and API integrations
-│   ├── anomaly.ts         # Deviation calculations
-│   ├── weather.ts         # Open-Meteo API
-│   ├── news.ts            # GNews API
-│   ├── cities.ts          # City database
-│   └── historical-averages.ts
-├── types/                 # TypeScript interfaces
-└── __tests__/            # Test files
-```
-
-## How It Works
-
-1. **Data Fetching** - Server-side fetches current temperatures for all 50 cities in parallel
-2. **Anomaly Calculation** - Compares each temperature against that city's historical average for the current day
-3. **Sorting** - Client-side sorting with memoized calculations
-4. **News Context** - Fetches related articles for the top 3 anomalies
-
-### Caching Strategy
-
-- **Weather data:** 1-hour ISR (Incremental Static Regeneration)
-- **News data:** 24-hour cache to respect API rate limits
-
-## Cities Covered
-
-The application tracks 50 cities strategically distributed across climate zones:
-
-| Region | Cities |
-|--------|--------|
-| North America | New York, Los Angeles, Chicago, Toronto, Mexico City, Miami |
-| South America | São Paulo, Buenos Aires, Lima, Bogotá, Santiago |
-| Europe | London, Paris, Berlin, Madrid, Rome, Moscow, Amsterdam, Stockholm, Athens, Istanbul |
-| Africa | Cairo, Lagos, Johannesburg, Nairobi, Casablanca, Accra |
-| Middle East | Dubai, Tel Aviv, Riyadh |
-| Asia | Tokyo, Beijing, Shanghai, Hong Kong, Singapore, Mumbai, Delhi, Bangkok, Seoul, Jakarta, Manila, Hanoi, Karachi |
-| Oceania | Sydney, Melbourne, Auckland, Perth |
-| Extreme | Reykjavik, Anchorage, Timbuktu |
-
-## Testing
-
-```bash
-# Run all tests
-pnpm test:run
-
-# Run tests in watch mode
-pnpm test
-```
-
-Test coverage includes:
-
-- Unit tests for deviation calculations
-- API integration tests
-- Component rendering tests
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## BMAD Development
-
-This project uses the [BMAD framework](./AGENTS.md) for AI-assisted development. See `AGENTS.md` for available agents and workflows.
-
-## License
-
-MIT
+| Path | What |
+| --- | --- |
+| `src/lib/cities.ts` | City list with coordinates and country codes |
+| `src/lib/historical-averages.ts` | Monthly averages per city and the daily interpolation |
+| `src/lib/anomaly.ts` | Fetches weather, computes deviations, picks the top 3 for news |
+| `src/lib/weather.ts`, `src/lib/news.ts` | Open-Meteo and GNews clients |
+| `src/components/AnomalyDashboard.tsx` | Client-side sorting |
+| `src/__tests__/` | Unit and component tests, including a check that every city has averages |
